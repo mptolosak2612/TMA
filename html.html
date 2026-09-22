@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mapa de ejecución — Migración TMA a Flow</title>
+  <meta name="description" content="Mapa visual para ordenar el inicio, responsables, dependencias y cadenas de la migración Movistar TV a Flow.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307243e'/%3E%3Cpath d='M13 32h29M34 21l11 11-11 11' fill='none' stroke='%236ee7ff' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='14' cy='32' r='6' fill='%23ffd166'/%3E%3C/svg%3E">
+  <style>
+    :root{--navy:#071f36;--navy2:#0b2e4f;--ink:#102638;--muted:#617488;--line:#dbe4eb;--paper:#f5f8fb;--white:#fff;--cyan:#00a9ce;--sky:#dff6fb;--yellow:#ffd166;--yellow2:#fff3c4;--green:#32b67a;--green2:#e1f7ed;--red:#e2574c;--red2:#fde9e7;--purple:#7868e6;--purple2:#efedff;--shadow:0 16px 40px rgba(7,31,54,.09);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--paper)}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#eef6fb 0,#f8fafc 340px);font-size:16px;line-height:1.45} button{font:inherit}
+    .shell{max-width:1440px;margin:auto;padding:26px 28px 56px}.top{background:var(--navy);color:white;border-radius:24px;padding:28px 32px;box-shadow:var(--shadow);position:relative;overflow:hidden}.top:after{content:"";position:absolute;width:420px;height:420px;border:70px solid rgba(0,169,206,.15);border-radius:50%;right:-150px;top:-245px}.eyebrow{color:#8fe9f8;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:.78rem}.top h1{font-size:clamp(1.75rem,3vw,3rem);line-height:1.08;margin:.5rem 0 .7rem;max-width:950px}.top p{max-width:880px;color:#d6e7f2;margin:0;font-size:1.05rem}.answer{margin-top:20px;display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.08);border-left:5px solid var(--yellow);padding:16px 18px;border-radius:0 14px 14px 0;max-width:1040px;position:relative;z-index:1}.answer strong{color:var(--yellow);display:block;margin-bottom:3px}.answer p{font-size:.98rem;color:white}
+    .nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 16px}.nav button{border:1px solid var(--line);background:white;color:var(--ink);padding:11px 16px;border-radius:999px;font-weight:700;cursor:pointer}.nav button.active{background:var(--navy);color:white;border-color:var(--navy)}
+    .view{display:none}.view.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin:24px 0 12px}.section-head h2{font-size:1.45rem;margin:0}.section-head p{margin:0;color:var(--muted);max-width:720px}.gate-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.gate{background:white;border-radius:16px;padding:16px;border-top:5px solid var(--yellow);box-shadow:0 8px 22px rgba(7,31,54,.06)}.gate span{display:block;color:var(--muted);font-size:.82rem;font-weight:700;text-transform:uppercase}.gate strong{display:block;margin:5px 0}.gate small{color:var(--muted)}
+    .lane{background:white;border-radius:20px;padding:18px;box-shadow:var(--shadow);overflow:hidden}.flow{display:grid;grid-template-columns:repeat(5,minmax(170px,1fr));gap:30px 22px;counter-reset:steps}.step{position:relative;border:1px solid var(--line);border-radius:16px;padding:15px 15px 14px;background:white;min-height:154px;cursor:pointer;transition:.18s ease;text-align:left;color:var(--ink)}.step:hover,.step.selected{transform:translateY(-2px);border-color:var(--cyan);box-shadow:0 10px 24px rgba(0,169,206,.14)}.step:not(:nth-child(5n)):after{content:"→";position:absolute;right:-18px;top:58px;color:var(--cyan);font-size:1.35rem;font-weight:700}.num{display:inline-grid;place-items:center;width:29px;height:29px;border-radius:9px;background:var(--navy);color:white;font-weight:800;font-size:.85rem}.owner{display:inline-block;margin-left:5px;color:var(--purple);background:var(--purple2);border-radius:999px;padding:4px 7px;font-size:.74rem;font-weight:800}.step h3{font-size:1rem;margin:12px 0 5px}.step p{font-size:.86rem;color:var(--muted);margin:0}.handoff{display:block;margin-top:10px;color:var(--green);font-size:.78rem;font-weight:800}.critical{border-top:5px solid var(--yellow)}.external{border-top:5px solid var(--purple)}.build{border-top:5px solid var(--cyan)}.operate{border-top:5px solid var(--green)}
+    .detail{margin-top:16px;background:var(--navy);color:white;border-radius:16px;padding:18px 20px;display:grid;grid-template-columns:1fr 1.2fr 1.2fr;gap:18px}.detail b{display:block;color:#8fe9f8;font-size:.78rem;text-transform:uppercase;margin-bottom:4px}.detail p{margin:0;color:#edf6fb}.legend{display:flex;flex-wrap:wrap;gap:14px;margin:12px 0 0;color:var(--muted);font-size:.82rem}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}.journey-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.journey-tabs button{border:0;background:#e8eef3;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}.journey-tabs button.active{background:var(--cyan);color:white}.journey-note{background:var(--sky);border-left:4px solid var(--cyan);padding:12px 15px;border-radius:0 12px 12px 0;margin-bottom:14px}.journey-flow{display:flex;gap:12px;align-items:stretch;overflow-x:auto;padding:4px 2px 14px}.journey-node{min-width:190px;flex:1;background:white;border:1px solid var(--line);border-radius:14px;padding:14px;position:relative}.journey-node:not(:last-child):after{content:"→";position:absolute;right:-10px;top:45%;z-index:2;background:var(--paper);color:var(--cyan);font-weight:900}.journey-node strong{display:block;margin-bottom:4px}.journey-node small{color:var(--muted)}
+    .start-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.plan{background:white;border-radius:20px;padding:20px;box-shadow:var(--shadow)}.week{display:grid;grid-template-columns:90px 1fr;gap:14px;padding:15px 0;border-bottom:1px solid var(--line)}.week:last-child{border-bottom:0}.week-label{font-weight:900;color:var(--navy)}.week h3{margin:0 0 5px;font-size:1rem}.week p{margin:0;color:var(--muted)}.week ul{margin:7px 0 0;padding-left:19px}.meeting{background:var(--yellow2);border-radius:20px;padding:20px;border:1px solid #f2d36c}.meeting h3{margin-top:0}.meeting ol{padding-left:22px}.meeting li{margin:8px 0}.participants{display:flex;flex-wrap:wrap;gap:7px}.chip{background:white;border-radius:999px;padding:6px 9px;font-size:.8rem;font-weight:800}.stop{margin-top:15px;background:var(--red2);color:#852a24;border-radius:13px;padding:12px 14px;font-weight:700}
+    .table-wrap{background:white;border-radius:20px;padding:12px 18px 18px;box-shadow:var(--shadow);overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:980px}th{text-align:left;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;padding:12px 10px;border-bottom:2px solid var(--line)}td{padding:13px 10px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child{font-weight:800}.tag{display:inline-block;border-radius:999px;padding:4px 8px;font-size:.75rem;font-weight:800}.tag.p0{background:var(--red2);color:#8c2c25}.tag.p1{background:var(--yellow2);color:#765d00}.tag.ok{background:var(--green2);color:#126841}.footer{margin-top:24px;color:var(--muted);font-size:.82rem;text-align:center}
+    @media(max-width:1100px){.flow{grid-template-columns:repeat(3,1fr)}.step:not(:nth-child(5n)):after{display:none}.gate-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:760px){.shell{padding:14px}.top{padding:23px 20px;border-radius:18px}.gate-grid,.start-grid{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.detail{grid-template-columns:1fr}.section-head{display:block}.section-head p{margin-top:6px}.journey-flow{display:grid;overflow:visible}.journey-node:not(:last-child):after{content:"↓";right:50%;top:auto;bottom:-15px}.week{grid-template-columns:1fr}.nav button{flex:1}.answer{display:block}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="top">
+    <div class="eyebrow">Mapa de ejecución · Movistar TV → Flow</div>
+    <h1>Por dónde empezar, quién sigue y qué habilita cada paso</h1>
+    <p>Una vista de trabajo para PO, Líder Técnico y Delivery Lead. Separa las decisiones previas de la cadena operativa y evita empezar a construir antes de cerrar los handoffs.</p>
+    <div class="answer"><div>◆</div><div><strong>Respuesta corta sobre Cita</strong><p>Fulfillment no es el paso cero. Primero Migración/Negocio define el lote y BSS/Producto congela la oferta. Después Fulfillment es el primer actor operativo: contacta, valida domicilio y modalidad. Field Service reserva la cita; MuleSoft orquesta; BSS crea y somete la orden.</p></div></div>
+  </header>
+
+  <nav class="nav" aria-label="Vistas">
+    <button class="active" data-view="chain">Cadena Cita</button>
+    <button data-view="journeys">Otros recorridos</button>
+    <button data-view="start">Plan de arranque</button>
+    <button data-view="deps">Dependencias y handoffs</button>
+  </nav>
+
+  <section id="chain" class="view active">
+    <div class="section-head"><div><h2>Antes de activar la cadena</h2><p>Cuatro gates obligatorios. Si uno no está cerrado, Fulfillment todavía no tiene un lote ejecutable.</p></div></div>
+    <div class="gate-grid">
+      <article class="gate"><span>Gate 1 · Gobierno</span><strong>Owner y autoridad definidos</strong><small>Accountable E2E, go/no-go y RACI por frente.</small></article>
+      <article class="gate"><span>Gate 2 · Universo</span><strong>Lote elegible y conciliado</strong><small>Cliente, tecnología, decos, OTT, localidad y exclusiones.</small></article>
+      <article class="gate"><span>Gate 3 · Oferta</span><strong>Plan, precio y grilla congelados</strong><small>Matriz origen-destino versionada para la ola.</small></article>
+      <article class="gate"><span>Gate 4 · Capacidad</span><strong>Zona, stock y red habilitados</strong><small>Field Service, Andreani, CDN, firmware y soporte.</small></article>
+    </div>
+
+    <div class="section-head"><div><h2>Cadena funcional de Cita técnica</h2><p>Seleccioná un paso para ver su entrada, salida y condición de avance.</p></div></div>
+    <div class="lane">
+      <div class="flow" id="flow"></div>
+      <div class="detail" id="detail" aria-live="polite"></div>
+      <div class="legend"><span><i style="background:var(--yellow)"></i>Decisión/gate</span><span><i style="background:var(--purple)"></i>Dependencia externa</span><span><i style="background:var(--cyan)"></i>Construcción/integración</span><span><i style="background:var(--green)"></i>Operación y cierre</span></div>
+    </div>
+  </section>
+
+  <section id="journeys" class="view">
+    <div class="section-head"><div><h2>La cadena cambia según la modalidad</h2><p>No conviene forzar un solo flujo. El orquestador debe compartir estados y controles, pero ramificar según el tratamiento del cliente.</p></div></div>
+    <div class="journey-tabs" id="journeyTabs"></div>
+    <div class="journey-note" id="journeyNote"></div>
+    <div class="journey-flow" id="journeyFlow"></div>
+  </section>
+
+  <section id="start" class="view">
+    <div class="section-head"><div><h2>Plan de arranque en cuatro semanas</h2><p>El objetivo no es terminar toda la solución: es lograr un vertical de Cita trazable y probar que los handoffs funcionan.</p></div></div>
+    <div class="start-grid">
+      <div class="plan">
+        <div class="week"><div class="week-label">Semana 1</div><div><h3>Cerrar decisiones P0</h3><p>Una secuencia oficial de Cita, owners nominales y contrato de entrada/salida.</p><ul><li>Quién arma el lote.</li><li>Qué devuelve Fulfillment.</li><li>Quién crea/reserva la cita.</li><li>Qué evento habilita facturación y baja.</li></ul></div></div>
+        <div class="week"><div class="week-label">Semana 2</div><div><h3>Diseñar contratos y excepciones</h3><p>CampaignResult, CapacityReservation, Appointment/OT y BSS Deco Order con errores e idempotencia.</p></div></div>
+        <div class="week"><div class="week-label">Semana 3</div><div><h3>Construir vertical mínimo</h3><p>Un cliente de prueba atraviesa Fulfillment → Field Service → MuleSoft → BSS y deja trazabilidad punta a punta.</p></div></div>
+        <div class="week"><div class="week-label">Semana 4</div><div><h3>Probar y decidir</h3><p>Happy path, domicilio inválido, sin capacidad, duplicado, timeout y cancelación. Cierre con evidencia y nueva estimación.</p></div></div>
+      </div>
+      <aside class="meeting">
+        <h3>Primera mesa recomendada: “Cita E2E”</h3>
+        <p><strong>Duración:</strong> 90 minutos · <strong>Salida:</strong> secuencia firmada y cuatro contratos acordados.</p>
+        <ol><li>Mostrar un único caso real.</li><li>Definir quién contacta y qué datos valida.</li><li>Resolver si Fulfillment devuelve preferencia, slot o cita.</li><li>Definir quién crea appointment/OT.</li><li>Fijar payload a MuleSoft y BSS.</li><li>Acordar eventos de cierre y error.</li></ol>
+        <div class="participants"><span class="chip">Inés · PO BSS</span><span class="chip">Jorge · LT BSS</span><span class="chip">Paula · Delivery</span><span class="chip">Migración</span><span class="chip">Fulfillment</span><span class="chip">Field Service</span><span class="chip">MuleSoft</span><span class="chip">Salesforce/BSS</span></div>
+        <div class="stop">No salir de la mesa con “lo vemos”. Cada flecha debe tener owner, dato, formato, SLA y respuesta de error.</div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="deps" class="view">
+    <div class="section-head"><div><h2>Handoffs que hay que cerrar primero</h2><p>La prioridad se define por capacidad de bloquear toda la cadena, no por tamaño del desarrollo.</p></div></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Prioridad</th><th>Entrega</th><th>De</th><th>Hacia</th><th>Debe contener</th><th>Bloquea</th></tr></thead><tbody>
+        <tr><td><span class="tag p0">P0</span></td><td>Lote ejecutable</td><td>Migración / Datos</td><td>Fulfillment</td><td>customerId, ola, segmento, modalidad posible, addressId, cantidad de decos</td><td>Contactación</td></tr>
+        <tr><td><span class="tag p0">P0</span></td><td>Resultado de campaña</td><td>Fulfillment</td><td>Orquestador</td><td>Domicilio validado, aceptación, modalidad, preferencia/reagenda, timestamp</td><td>Reserva de cita</td></tr>
+        <tr><td><span class="tag p0">P0</span></td><td>Cita/OT preliminar</td><td>Field Service</td><td>MuleSoft / BSS</td><td>appointmentId u OT, slot, vigencia, zona, skills, estado</td><td>Alta comercial/técnica</td></tr>
+        <tr><td><span class="tag p0">P0</span></td><td>Solicitud de orden</td><td>MuleSoft</td><td>BSS</td><td>idempotencyKey, cliente, planVersion, decos, appointmentId/OT, addressId</td><td>Creación y submit</td></tr>
+        <tr><td><span class="tag p0">P0</span></td><td>Confirmación de instalación</td><td>Field Service</td><td>Orquestador / Billing</td><td>customerId, deviceId/serial, installedAt, resultado y causa</td><td>Cobro y baja origen</td></tr>
+        <tr><td><span class="tag p1">P1</span></td><td>Gate de facturación</td><td>Billing</td><td>Migración / TMA</td><td>approved/blocked, fecha facturable, prorrateo y causa</td><td>Baja CRM/TMA</td></tr>
+        <tr><td><span class="tag p1">P1</span></td><td>Timeline de cliente</td><td>Orquestador / Datos</td><td>Atención / Hypercare</td><td>Estado E2E, último paso, error, próximo intento, owner y SLA</td><td>Soporte</td></tr>
+      </tbody></table>
+    </div>
+  </section>
+  <div class="footer">Propuesta de trabajo basada en las dos transcripciones y los Miro “Migra TMA” y “Workshop Migra 2026-09”. Owners y fechas deben validarse en la mesa E2E.</div>
+</main>
+<script>
+const steps=[
+{n:1,type:'critical',owner:'Migración + Datos',title:'Armar lote elegible',text:'Selecciona clientes conciliados y aplica exclusiones.',input:'Snapshot de parque, reglas y versión de ola.',output:'Lote único con segmento, decos, OTT, zona y causa de exclusión.',gate:'No hay duplicados; 100% del lote concilia.'},
+{n:2,type:'critical',owner:'BSS + Producto',title:'Resolver oferta destino',text:'Congela plan, precio, grilla, packs y cantidad de decos.',input:'Producto TMA y atributos del cliente.',output:'planVersion y SKU destino inequívocos.',gate:'Una combinación origen produce un destino o una excepción.'},
+{n:3,type:'external',owner:'Fulfillment',title:'Contactar y validar',text:'Informa, confirma domicilio y captura aceptación/modalidad.',input:'Lote ejecutable + textos y canales aprobados.',output:'CampaignResult: aceptado, rechazo, no respuesta o reagenda.',gate:'Domicilio normalizado y respuesta auditable.'},
+{n:4,type:'external',owner:'Field Service',title:'Consultar capacidad y reservar',text:'Valida cupo por zona y crea/reserva cita u OT preliminar.',input:'Cliente confirmado, addressId, skills y preferencia.',output:'appointmentId/OT, slot, TTL y restricciones.',gate:'Reserva vigente e idempotente.'},
+{n:5,type:'build',owner:'MuleSoft',title:'Orquestar la solicitud',text:'Valida el handoff y encadena Field Service con BSS.',input:'CampaignResult + appointmentId/OT + correlationId.',output:'Request normalizado a BSS con idempotencyKey.',gate:'Contrato válido, trazable y reintentable.'},
+{n:6,type:'build',owner:'BSS / Salesforce',title:'Crear y someter orden',text:'Crea caso, vincula SA/OT, agrega order items y hace submit.',input:'Plan congelado, decos, cita/OT y domicilio.',output:'caseId, orderId, items y estado normalizado.',gate:'La misma clave nunca duplica caso ni orden.'},
+{n:7,type:'operate',owner:'Field Service',title:'Instalar y confirmar',text:'Ejecuta visita, vincula serial y cierra el trabajo.',input:'OT completa, equipo reservado y cliente informado.',output:'Evento instalado o causa de no instalación.',gate:'Serial, timestamp y resultado conciliados.'},
+{n:8,type:'operate',owner:'Migración + Billing',title:'Activar y controlar cobro',text:'Confirma Flow utilizable y evita doble facturación.',input:'Instalación exitosa + activación destino.',output:'Billing gate aprobado o bloqueado con causa.',gate:'No se factura antes de disponibilidad real.'},
+{n:9,type:'operate',owner:'TMA + Operaciones',title:'Dar de baja y estabilizar',text:'Baja origen con gates cumplidos y monitorea D+1/D+3/D+7.',input:'Destino activo, billing OK y eventos conciliados.',output:'Baja confirmada o excepción con owner y SLA.',gate:'100% migrado, revertido o excepcionado.'}
+];
+const flow=document.getElementById('flow'),detail=document.getElementById('detail');
+function selectStep(i){document.querySelectorAll('.step').forEach((x,j)=>x.classList.toggle('selected',i===j));const s=steps[i];detail.innerHTML=`<div><b>Entrada necesaria</b><p>${s.input}</p></div><div><b>Salida / handoff</b><p>${s.output}</p></div><div><b>Condición para avanzar</b><p>${s.gate}</p></div>`}
+steps.forEach((s,i)=>{const b=document.createElement('button');b.className=`step ${s.type}`;b.innerHTML=`<span class="num">${s.n}</span><span class="owner">${s.owner}</span><h3>${s.title}</h3><p>${s.text}</p><span class="handoff">Entrega al paso ${s.n<9?s.n+1:'de cierre'} →</span>`;b.onclick=()=>selectStep(i);flow.appendChild(b)});selectStep(2);
+
+const journeys={
+ 'Cita técnica':{note:'Fulfillment inicia la ejecución operativa, pero Field Service debe ser dueño de la capacidad y de la cita/OT.',nodes:[['Migración','Lote + oferta'],['Fulfillment','Contacto + domicilio'],['Field Service','Slot + cita/OT'],['MuleSoft','Orquestación'],['BSS','Orden + submit'],['Técnico','Instalación'],['Billing/TMA','Cobro + baja']]},
+ 'Delivery':{note:'No hay cita. Fulfillment valida domicilio y modalidad; Logística reserva stock y Andreani entrega. BSS procesa la orden con deliveryMethod.',nodes:[['Migración','Lote + oferta'],['Fulfillment','Contacto + domicilio'],['Logística','Stock + cobertura'],['MuleSoft','Ruta delivery'],['BSS','Orden + submit'],['Andreani','Entrega'],['Eventos','Registrado/instalado'],['Billing/TMA','Cobro + baja']]},
+ 'Reflash':{note:'El primer gate es técnico: modelo, firmware, conectividad, SMP y capacidad de red. El rollout debe ser gradual y reversible.',nodes:[['Datos','Modelo elegible'],['Dispositivos','Firmware certificado'],['Red/SMP','Ready técnico'],['Orquestador','Ventana OTA'],['Deco','Actualización'],['Telemetría','QoE + rollback'],['Billing/TMA','Cierre']]},
+ 'Solo app':{note:'Identidad pasa al camino crítico. No hay logística física; el evento decisivo es el primer login exitoso o la activación inequívoca.',nodes:[['Migración','Lote solo app'],['Producto','Oferta + grilla'],['Identidad','Federación/matching'],['Flow','Activación'],['Cliente','Primer login'],['CX/Datos','Medición'],['Billing/TMA','Cierre']]},
+ 'OTT':{note:'Disney es el patrón inicial, pero no debe asumirse que HBO/Max o Prime usarán el mismo mecanismo.',nodes:[['BSS','Mapeo SKU'],['Entertainment','Entitlement Flow'],['Orquestador','Relación origen-destino'],['Partner','Reapuntamiento'],['BSS/TMA','Confirmación + baja'],['Datos','Conciliación']]}
+};
+const jt=document.getElementById('journeyTabs'),jf=document.getElementById('journeyFlow'),jn=document.getElementById('journeyNote');
+function showJourney(name){[...jt.children].forEach(b=>b.classList.toggle('active',b.textContent===name));const j=journeys[name];jn.textContent=j.note;jf.innerHTML=j.nodes.map(n=>`<div class="journey-node"><strong>${n[0]}</strong><small>${n[1]}</small></div>`).join('')}
+Object.keys(journeys).forEach((n,i)=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>showJourney(n);jt.appendChild(b)});showJourney('Cita técnica');
+
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.view).classList.add('active')}));
+</script>
+</body>
+</html>
